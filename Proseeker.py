@@ -368,6 +368,6 @@ for g in range(2, generations+1):
         klist2 = map(''.join, klist2)
         klist3 = klist3[0:tpctfrc]
 
-    with open(os.path.join(resdir, 'g{}variantscores.tsv'.format(g)), 'w') as f:
+    with open(os.path.join(resdir, 'g{}variantscores.tsv'.format(g)), 'w', newline='') as f:
         writer = csv.writer(f, delimiter='\t')
         writer.writerows(zip(klist3, klist2, klist1))
