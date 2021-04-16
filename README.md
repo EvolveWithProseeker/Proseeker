@@ -6,9 +6,9 @@ Proseeker is supplied as a standalone Python script (Proseeker.py) for either in
 
 If running in a pipeline the commenting on the below lines (38 & 40 in Proseeker.py as written) shouled be uncommented and the path to the working directory supplied as a commandline argument:
 
-  user_input = input("Enter the path to your Proseeker working directory (i.e C:\Proseeker): ")
+    user_input = input("Enter the path to your Proseeker working directory (i.e C:\Proseeker): ")
 
-  # user_input = int(sys.argv[1])
+    # user_input = int(sys.argv[1])
 
 The Proseeker working directory should contain the files ranking.csv, jobstart.csv and whatever you have named your Bres file directory (i.e. PPRONLY).
 
@@ -39,17 +39,17 @@ Making BRES files is acomplished using the BresMaker.py script.
 
 This script may be run in a pipeline or in an interactive environment by changing commenting on the below lines to produce ether a commandline or interactive version (24:34 in BresMaker.py as written):
 
-  #user_input = str(sys.argv[1])
-  #ranking = str(sys.argv[2])
-  #working = str(sys.argv[3])
-  #iterations = int(sys.argv[4])
-  #trys = int(sys.argv[5])
+    #user_input = str(sys.argv[1])
+    #ranking = str(sys.argv[2])
+    #working = str(sys.argv[3])
+    #iterations = int(sys.argv[4])
+    #trys = int(sys.argv[5])
 
-  user_input = "D:/Proseeker/exampledeets.csv"
-  ranking = "D:/Proseeker/ranking.csv"
-  working = "D:/Proseeker"
-  iterations = 1000000
-  trys = 1000
+    user_input = "D:/Proseeker/exampledeets.csv"
+    ranking = "D:/Proseeker/ranking.csv"
+    working = "D:/Proseeker"
+    iterations = 1000000
+    trys = 1000
 
 The details file (exampledeets.csv) loaed as 'user_input' consists of a .csv file with two columns. column one consists of the sequence of the protein from which sites are to be harvested as below:
 
