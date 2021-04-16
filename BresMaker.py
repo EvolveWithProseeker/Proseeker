@@ -175,7 +175,7 @@ for x in range(0, len(seqs)):
                                          subject[subpos+6]))
 
             breswindow = np.column_stack(breswindow)
-            kmeans = KMeans(n_clusters=50)
+            kmeans = KMeans(n_clusters=50, n_init=1000, max_iter=1000000, algorithm="full")
             kmeans.fit(breswindow)
             clusters = kmeans.labels_
             breswindow = np.insert(breswindow, 13, clusters, axis=1)
