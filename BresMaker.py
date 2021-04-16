@@ -21,13 +21,17 @@ def find(s, ch):
 
 # DATALOAD
 
-#user_input = sys.argv[1]
-#ranking = sys.argv[2]
-#working = sys.argv[3]
+#user_input = str(sys.argv[1])
+#ranking = str(sys.argv[2])
+#working = str(sys.argv[3])
+#iterations = int(sys.argv[4])
+#trys = int(sys.argv[5])
 
 user_input = "D:/Proseeker/PSEUDOTALEDEETS.csv"
 ranking = "D:/Proseeker/ranking.csv"
 working = "D:/Proseeker"
+iterations = 1000000
+trys = 1000
 
 aavals = pd.read_csv(ranking, usecols=['A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V'],
                      sep =',')
@@ -175,7 +179,7 @@ for x in range(0, len(seqs)):
                                          subject[subpos+6]))
 
             breswindow = np.column_stack(breswindow)
-            kmeans = KMeans(n_clusters=50, n_init=1000, max_iter=1000000, algorithm="full")
+            kmeans = KMeans(n_clusters=50, n_init=trys, max_iter=iterations, algorithm="full")
             kmeans.fit(breswindow)
             clusters = kmeans.labels_
             breswindow = np.insert(breswindow, 13, clusters, axis=1)
