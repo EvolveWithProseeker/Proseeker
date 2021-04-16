@@ -16,8 +16,8 @@ The ranking file contains values drawn from AAindex as stated in the paper.
 
 The jobstart.csv file (example included) is laid out as below in two lines with headers as shown:
 
-  g,k,MEG,block,g1,pchoice,A,R,N,D,C,Q,E,G,H,I,L,K,M,F,P,S,T,W,Y,V,truncres,cores,sites,bres
-  20,100,2,MMMMFFFFFFFFMMMMMMMMMMMMMFFFFFFFFFFFFFMM,SELVNEIVKQLAEVAKEATDKELVIYIVKILAELAKQSTD,1,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,10,4,2,BRES
+      g,k,MEG,block,g1,pchoice,A,R,N,D,C,Q,E,G,H,I,L,K,M,F,P,S,T,W,Y,V,truncres,cores,sites,bres
+      20,100,2,MMMMFFFFFFFFMMMMMMMMMMMMMFFFFFFFFFFFFFMM,SELVNEIVKQLAEVAKEATDKELVIYIVKILAELAKQSTD,1,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,10,4,2,BRES
 
 g = number of generations and should be any positive integer greater than 1 (20 is the default).
 k = the number of variants to be amde per generation. This should be a positive integer greater than 10 (100 is the default and is recommended).
@@ -53,7 +53,7 @@ This script may be run in a pipeline or in an interactive environment by changin
 
 The details file (exampledeets.csv) loaed as 'user_input' consists of a .csv file with two columns. column one consists of the sequence of the protein from which sites are to be harvested as below:
 
-  LTPEQVVAIASNIGGKQALETVQALLPVLCQAHG,12:13:14
+    LTPEQVVAIASNIGGKQALETVQALLPVLCQAHG,12:13:14
 
 Column 1 consists of one string per row consisting of letters (case is irrelevant) corresponding to one of the 20 natural amino acids. STOP codon is not included and Proseeker has no ability to introduce STOP codons.
 
