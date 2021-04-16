@@ -2,7 +2,13 @@
 
 In silico directed evolution
 
-Proseeker is supplied as a standalone Python script (Proseeker.py) for either interative use or pipeline integration. 
+Proseeker is supplied as a standalone Python script (Proseeker.py) for either interative use or pipeline integration and was written in Python 3.9. 
+
+Packages required:
+
+    numpy
+    pandas
+    sklearn
 
 If running in a pipeline the commenting on the below lines (38 & 40 in Proseeker.py as written) shouled be uncommented and the path to the working directory supplied as a commandline argument:
 
@@ -36,6 +42,14 @@ Once run Proseeker will create a time-stamped directory for the run within the w
 # BresMaker
 
 Making BRES files is acomplished using the BresMaker.py script.
+
+BresMaker is supplied as a standalone Python script (BresMaker.py) for either interative use or pipeline integration and was written in Python 3.9. 
+
+Packages required:
+
+    numpy
+    pandas
+    sklearn
 
 This script may be run in a pipeline or in an interactive environment by changing commenting on the below lines to produce ether a commandline or interactive version (24:34 in BresMaker.py as written):
 
