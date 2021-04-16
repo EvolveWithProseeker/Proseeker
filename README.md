@@ -65,7 +65,7 @@ This script may be run in a pipeline or in an interactive environment by changin
     iterations = 1000000
     trys = 1000
 
-The details file (exampledeets.csv) loaed as 'user_input' consists of a .csv file with two columns. column one consists of the sequence of the protein from which sites are to be harvested as below:
+The details file (exampledeets.csv) loaded as 'user_input' consists of a .csv file with two columns as below:
 
     LTPEQVVAIASNIGGKQALETVQALLPVLCQAHG,12:13:14
 
