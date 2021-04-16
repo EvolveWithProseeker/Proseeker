@@ -1,6 +1,4 @@
-# ProSeeker
-
-In silico directed evolution
+# ProSeeker: In silico directed evolution
 
 ProSeeker is supplied as a standalone Python script (Proseeker.py) for either interative use or pipeline integration and was written in Python 3.9. 
 
