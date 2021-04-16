@@ -35,13 +35,13 @@ A,R,N,D,C,Q,E,G,H,I,L,K,M,F,P,S,T,W,Y,V = the individual probability of selectio
 truncres = Proportion of results to provide to the user. The default is 10 which will results in the best k/10 ressults per generation being provided to the user.
 cores = specification of number cores. This is present to support the parallelized version. This is set to 4 default however for non-cluster use it may be ignored.
 sites = The number of sites per protein within the assessment library that are to be used as comparators
-BRES = the name of the directroy in which your BRES files are stored (i.e. if the BRES files are in C:\path\to\Proseeker\BRES then you would specify just BRES.
+BRES = the name of the directory in which your BRES files are stored (i.e. if the BRES files are in C:\path\to\Proseeker\BRES then you would specify just BRES.
 
-Once run Proseeker will create a time-stamped directory for the run within the working directory. This directroy will be empty at first however it will save each generations best results in the created file for later harvesting and examination. As such multiple runs can be performed simultaneously on a desktop enironment allowing triplicate runs for verification and assessment of consistency.
+Once run Proseeker will create a time-stamped directory for the run within the working directory. This directory will be empty at first however it will save each generations best results in the created file for later harvesting and examination. As such multiple runs can be performed simultaneously on a desktop enironment allowing triplicate runs for verification and assessment of consistency.
 
 # BresMaker
 
-Making BRES files is acomplished using the BresMaker.py script.
+Making BRES files is acomplished using the BresMaker.py script. BRES files used here are simplified BRES files.
 
 BresMaker is supplied as a standalone Python script (BresMaker.py) for either interative use or pipeline integration and was written in Python 3.9. 
 
