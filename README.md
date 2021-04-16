@@ -77,4 +77,4 @@ The ranking file (ranking.csv) loaded as 'ranking' contains values drawn from AA
 
 Working is the directory in which the BresFiles are to be created. It is recommended that a specific directory be created for this. 
 
-Iterations and Trys refer to the maximum number of k-means clustering interations to be performed and the number of time the k-means algorithm will be run with different centroid seeds respectively. 
+Iterations and Trys refer to the maximum number of k-means clustering interations to be performed and the number of time the k-means algorithm will be run with different centroid seeds respectively. This process works better the tighter the clusters are. As such It is suggest that a minimum of trys = 100 should be used while the default is 1000. This will result in some extra time spent preparing the library but produces more consistent, higher quality evolution runs.
