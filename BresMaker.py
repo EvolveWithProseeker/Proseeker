@@ -27,7 +27,7 @@ def find(s, ch):
 #iterations = int(sys.argv[4])
 #trys = int(sys.argv[5])
 
-user_input = "D:/Proseeker/PSEUDOTALEDEETS.csv"
+user_input = "D:/Proseeker/exampledeets.csv"
 ranking = "D:/Proseeker/ranking.csv"
 working = "D:/Proseeker"
 iterations = 1000000
