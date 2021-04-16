@@ -35,7 +35,7 @@ The jobstart.csv file (example included) is laid out as below in two lines with 
 
    **pchoice** = the choice to use a specified probability set or not. 1 = yes and 0 = no. 
 
-   **A,R,N,D,C,Q,E,G,H,I,L,K,M,F,P,S,T,W,Y,V** = the individual probability of selection of each AA. These should add up to 1 and as such 0.05 represent an even probability of selection. If phoice = 1 then the values listed here will be used. 
+   **A,R,N,D,C,Q,E,G,H,I,L,K,M,F,P,S,T,W,Y,V** = the individual probability of selection of each AA. These should add up to 1 and as such 0.05 represents an even probability of selection. If phoice = 1 then the values listed here will be used. 
 
    **truncres** = Proportion of results to provide to the user. The default is 10 which will results in the best k/10 ressults per generation being provided to the user.
 
