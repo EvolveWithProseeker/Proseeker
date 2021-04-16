@@ -37,7 +37,7 @@ cores = specification of number cores. This is present to support the paralleliz
 sites = The number of sites per protein within the assessment library that are to be used as comparators
 BRES = the name of the directory in which your BRES files are stored (i.e. if the BRES files are in C:\path\to\Proseeker\BRES then you would specify just BRES.
 
-Once run Proseeker will create a time-stamped directory for the run within the working directory. This directory will be empty at first however it will save each generations best results in the created file for later harvesting and examination. As such multiple runs can be performed simultaneously on a desktop enironment allowing triplicate runs for verification and assessment of consistency.
+Once run Proseeker will create a time-stamped directory for the run within the working directory (the jobstart.csv file is only needed initially and as such after run commencement may be moved or altered). This directory will be empty at first however it will save each generations best results in the created file for later harvesting and examination. As such multiple runs can be performed simultaneously on a desktop enironment allowing triplicate runs for verification and assessment of consistency.
 
 # BresMaker
 
