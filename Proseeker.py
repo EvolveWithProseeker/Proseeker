@@ -37,7 +37,7 @@ def find(s, ch):
 
 user_input = input("Enter the path to your Proseeker working directory (i.e C:\Proseeker): ")
 
-# user_input = sys.argv[1]
+# user_input = str(sys.argv[1])
 
 collist = ['g', 'k', 'MEG', 'block', 'g1', 'pchoice', 'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M',
            'F', 'P', 'S', 'T', 'W', 'Y', 'V', 'truncres', 'cores', 'sites', 'bres']
