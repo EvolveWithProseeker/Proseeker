@@ -5,7 +5,6 @@
 
 # IMPORTS
 
-
 import sys
 import subprocess
 import pkg_resources
@@ -38,7 +37,7 @@ def find(s, ch):
 
 user_input = input("Enter the path to your Proseeker working directory (i.e C:\Proseeker): ")
 
-#user_input = int(sys.argv[1])
+# user_input = str(sys.argv[1])
 
 collist = ['g', 'k', 'MEG', 'block', 'g1', 'pchoice', 'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M',
            'F', 'P', 'S', 'T', 'W', 'Y', 'V', 'truncres', 'cores', 'sites', 'bres']
@@ -57,6 +56,7 @@ pchoice = int(jobstart['pchoice'])
 trunc = int(jobstart['truncres'])
 cores = int(jobstart['cores'])
 sites = int(jobstart['sites'])
+
 d = {}
 
 if pchoice == 1:
@@ -76,16 +76,16 @@ os.mkdir(resdir)
 d1 = {}
 d2 = {}
 
-for bs in range(1, sites + 1):
+for bs in range(1, sites +1):
     for x in range(1, 31):
         bres = pd.read_csv(os.path.join(bresdir, 'p{}.bres{}.csv'.format(x, bs)), header=None, sep=',')
         d['b{}.bres{}.csv'.format(x, bs)] = bres
         d['b{}.bres{}.ind'.format(x, bs)] = list(bres.iloc[:, 13])
 
-        for v in range(0, 13):
+        for v in range(0,13):
             d1['col{}'.format(v)] = list(bres.iloc[:, v])
 
-        for y in range(0, 50):
+        for y in range (0, 50):
             set1 = [index for index, element in enumerate(d['b{}.bres{}.ind'.format(x, bs)]) if element == y]
             meanset1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             slopeset1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -144,12 +144,11 @@ readorder = list.copy(mutinds)
 # MUTAGENESIS
 
 g1 = list(g1)
-klstindx = 1
+bestmutset = []
 
 for g in range(2, generations+1):
-
+    klstindx = 1
     print('Gen {} mutagenesis commenced'.format(g))
-
     for k in range(0, wide):
 
         if g == 2:
@@ -158,9 +157,7 @@ for g in range(2, generations+1):
         else:
             if k / 10 > klstindx:
                 klstindx += 1
-
-            subject = d[klist3[klstindx]]
-            subject = subject[5:len(subject) - 24]
+            subject = bestmutset[klstindx]
         var = list.copy(subject)
         for emeg in range(0, MEG):
             random.shuffle(mutinds)
@@ -177,6 +174,8 @@ for g in range(2, generations+1):
         del(var)
 
 # VARIANT ASSESSMENT
+
+    bestmutset = []
     kset = []
 
     print('Gen {} assessment commenced'.format(g))
@@ -360,9 +359,15 @@ for g in range(2, generations+1):
 
     klist1, klist2, klist3 = zip(*sorted(zip(klist2, klist1, klist3)))
 
-    if trunc > 0:
-        tpctfrc = wide/trunc
+    bestmutset = klist2
 
-    with open(os.path.join(resdir, 'g{}variantscores.tsv'.format(g)), 'w') as f:
+    if trunc > 0:
+        tpctfrc = int(round(wide/trunc))
+        klist1 = klist1[0:tpctfrc]
+        klist2 = klist2[0:tpctfrc]
+        klist2 = map(''.join, klist2)
+        klist3 = klist3[0:tpctfrc]
+
+    with open(os.path.join(resdir, 'g{}variantscores.tsv'.format(g)), 'w', newline='') as f:
         writer = csv.writer(f, delimiter='\t')
-        writer.writerows(zip(klist3[0:tpctfrc], klist2[0:tpctfrc], klist1)[0:tpctfrc])
+        writer.writerows(zip(klist3, klist2, klist1))
