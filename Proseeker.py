@@ -147,7 +147,7 @@ g1 = list(g1)
 bestmutset = []
 
 for g in range(2, generations+1):
-    klstindx = 1
+    klstindx = 0
     print('Gen {} mutagenesis commenced'.format(g))
     for k in range(0, wide):
 
