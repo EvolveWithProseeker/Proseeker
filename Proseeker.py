@@ -155,7 +155,7 @@ for g in range(2, generations+1):
             subject = list.copy(g1)
             subject = subject[5:len(subject) - 24]
         else:
-            if k / 10 > klstindx:
+            if k / 10 >= klstindx:
                 klstindx += 1
             subject = bestmutset[klstindx]
         var = list.copy(subject)
