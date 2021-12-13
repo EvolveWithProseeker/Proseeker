@@ -147,19 +147,26 @@ g1 = list(g1)
 bestmutset = []
 
 for g in range(2, generations+1):
-    klstindx = 1
+    klstindx = 0
+
+
     print('Gen {} mutagenesis commenced'.format(g))
+
+
     for k in range(0, wide):
 
         if g == 2:
             subject = list.copy(g1)
             subject = subject[5:len(subject) - 24]
         else:
-            if k / 10 >= klstindx:
+            if k / 10 >= klstindx + 1:
                 klstindx += 1
             subject = bestmutset[klstindx]
+
         var = list.copy(subject)
+
         for emeg in range(0, MEG):
+
             random.shuffle(mutinds)
 
             mutchoice = np.random.choice(['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P',
