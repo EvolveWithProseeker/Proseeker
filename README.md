@@ -1,6 +1,6 @@
-# ProSeeker: *In silico directed evolution*
+# Proseeker: *In silico directed evolution*
 
-ProSeeker is supplied as a standalone Python script (Proseeker.py) for either interactive use or pipeline integration and was written in Python 3.9. 
+Proseeker is supplied as a standalone Python script (Proseeker.py) for either interactive use or pipeline integration and was written in Python 3.9. 
 
 Packages required:
 
@@ -14,7 +14,7 @@ If running in a pipeline the commenting on the below lines (38 & 40 in Proseeker
 
     # user_input = int(sys.argv[1])
 
-The ProSeeker working directory should contain the files ranking.csv, jobstart.csv and whatever you have named your Bres file directory (i.e. PPRONLY).
+The Proseeker working directory should contain the files ranking.csv, jobstart.csv and whatever you have named your Bres file directory (i.e. PPRONLY).
 
 The ranking file contains values drawn from AAindex as stated in the paper.
 
@@ -35,7 +35,7 @@ The jobstart.csv file (example included) is laid out as below in two lines with 
 
    **pchoice** = the choice to use a specified probability set or not. 1 = yes and 0 = no. 
 
-   **A,R,N,D,C,Q,E,G,H,I,L,K,M,F,P,S,T,W,Y,V** = the individual probability of selection of each AA. These should add up to 1 and as such 0.05 represents an even probability of selection. If phoice = 1 then the values listed here will be used. 
+   **A,R,N,D,C,Q,E,G,H,I,L,K,M,F,P,S,T,W,Y,V** = the individual probability of selection of each AA. These should add up to 1 and as such 0.05 (20*0.05) represents an even probability of selection. If phoice = 1 then the values listed here will be used. 
 
    **truncres** = Proportion of results to provide to the user. The default is 10 which will results in the best k/10 ressults per generation being provided to the user.
 
@@ -45,7 +45,7 @@ The jobstart.csv file (example included) is laid out as below in two lines with 
 
  **BRES** = the name of the directory in which your BRES files are stored (i.e. if the BRES files are in C:\path\to\Proseeker\BRES then you would specify just BRES).
 
-Once run ProSeeker will create a time-stamped directory for the run within the working directory (the jobstart.csv file is only needed initially and as such after run commencement may be moved or altered). This directory will be empty at first however it will save each generations best results in the created file for later harvesting and examination. As such multiple runs can be performed simultaneously on a desktop enironment allowing triplicate runs for verification and assessment of consistency.
+Once run Proseeker will create a time-stamped directory for the run within the working directory (the jobstart.csv file is only needed initially and as such after run commencement may be moved or altered). This directory will be empty at first however it will save each generations best results in the created file for later harvesting and examination. As such multiple runs can be performed simultaneously on a desktop enironment allowing triplicate runs for verification and assessment of consistency.
 
 # BresMaker
 
