@@ -300,7 +300,7 @@ for g in range(2, generations+1):
 
                 for mbs in range(1, sites + 1):
 
-                    for y in range(0, 50): # For each cluster
+                    for y in range(1, 51): # For each cluster
                         set1 = [index for index, element in enumerate(d['b{}.bres{}.ind'.format(v, mbs)]) if element == y]
                         meanset1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                         slopeset1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
