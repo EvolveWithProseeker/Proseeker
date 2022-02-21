@@ -339,7 +339,7 @@ for g in range(2, generations+1):
                 summdif1 = [0, 0, 0, 0, 0]
                 ttl = []
                 for smbs in range(1, sites + 1):
-                    for clust in range(0, 50):
+                    for clust in range(1, 51):
 
                         summdif1[0] = sum(d4['p{}.means{}.c{}.pos{}'.format(k, smbs, clust, x)])
                         summdif1[1] = sum(d4['p{}.cslopes{}.c{}.pos{}'.format(k, smbs, clust, x)])
