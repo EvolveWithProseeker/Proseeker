@@ -85,7 +85,7 @@ for bs in range(1, sites +1):
         for v in range(0,13):
             d1['col{}'.format(v)] = list(bres.iloc[:, v])
 
-        for y in range (0, 50):
+        for y in range (1, 51):
             set1 = [index for index, element in enumerate(d['b{}.bres{}.ind'.format(x, bs)]) if element == y]
             meanset1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             slopeset1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
