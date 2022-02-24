@@ -13,6 +13,11 @@ from datetime import datetime
 import random
 import warnings
 import csv
+import shutil
+from scipy.stats import shapiro
+from itertools import product
+import math
+import statistics
 
 required = {'numpy', 'pandas', 'sklearn'}
 installed = {pkg.key for pkg in pkg_resources.working_set}
@@ -40,7 +45,7 @@ user_input = input("Enter the path to your Proseeker working directory (i.e C:\P
 # user_input = str(sys.argv[1])
 
 collist = ['g', 'k', 'MEG', 'block', 'g1', 'pchoice', 'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M',
-           'F', 'P', 'S', 'T', 'W', 'Y', 'V', 'truncres', 'cores', 'sites', 'bres']
+           'F', 'P', 'S', 'T', 'W', 'Y', 'V', 'truncres', 'cores', 'sites', 'bres', 'fmode', 'fthresh']
 
 jobstart = pd.read_csv(os.path.join(user_input, 'jobstart.csv'), usecols=collist)
 resdir = os.path.join(user_input, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
@@ -56,6 +61,8 @@ pchoice = int(jobstart['pchoice'])
 trunc = int(jobstart['truncres'])
 cores = int(jobstart['cores'])
 sites = int(jobstart['sites'])
+asslib = str(jobstart["fmode"])
+asslibthresh = int(jobstart['fthresh'])
 
 d = {}
 
@@ -70,6 +77,7 @@ else:
 # DIRECTORY_SETUP
 
 os.mkdir(resdir)
+shutil.copyfile(os.path.join(user_input, 'jobstart.csv'), os.path.join(resdir, 'used_jobstart.csv'))
 
 #   BRESIMPORT
 
@@ -85,7 +93,7 @@ for bs in range(1, sites +1):
         for v in range(0,13):
             d1['col{}'.format(v)] = list(bres.iloc[:, v])
 
-        for y in range (1, 51):
+        for y in range (0, 50):
             set1 = [index for index, element in enumerate(d['b{}.bres{}.ind'.format(x, bs)]) if element == y]
             meanset1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             slopeset1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -145,49 +153,82 @@ readorder = list.copy(mutinds)
 
 g1 = list(g1)
 bestmutset = []
+asslib = str(asslib[5:8])
 
 for g in range(2, generations+1):
     klstindx = 0
 
+    if asslib != "YES":
+        print('Gen {} mutagenesis commenced'.format(g))
+        for k in range(0, wide):
+            if g == 2:
+                subject = list.copy(g1)
+                subject = subject[5:len(subject) - 24]
+            else:
+                if k / 10 >= klstindx + 1:
+                    klstindx += 1
+                subject = bestmutset[klstindx]
 
-    print('Gen {} mutagenesis commenced'.format(g))
+            var = list.copy(subject)
 
+            for emeg in range(0, MEG):
 
-    for k in range(0, wide):
+                random.shuffle(mutinds)
 
-        if g == 2:
-            subject = list.copy(g1)
-            subject = subject[5:len(subject) - 24]
-        else:
-            if k / 10 >= klstindx + 1:
-                klstindx += 1
-            subject = bestmutset[klstindx]
+                mutchoice = np.random.choice(['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P',
+                                              'S', 'T', 'W', 'Y', 'V'], 1, p=list(d['aaprobset']))
 
-        var = list.copy(subject)
+                choice = int(mutinds[0])
+                var[choice] = mutchoice
 
-        for emeg in range(0, MEG):
+            d['g{}p{}'.format(g, k)] = var
+            d['g{}p{}'.format(g, k)] = [item for sublist in d['g{}p{}'.format(g, k)] for item in sublist]
+            del(var)
 
-            random.shuffle(mutinds)
+    else:
 
-            mutchoice = np.random.choice(['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P',
-                                          'S', 'T', 'W', 'Y', 'V'], 1, p=list(d['aaprobset']))
+        print('Library construction has commenced'.format(g))
+        mutinds = sorted(mutinds)
+        aaspwr = ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P',
+                     'S', 'T', 'W', 'Y', 'V']
+        aaspwrprob = d['aaprobset']
+        aaspwrsub = []
+        for i in range(0, len(aaspwrprob)):
+            if aaspwrprob[i] > 0:
+                aaspwrsub.append(aaspwr[i])
 
-            choice = int(mutinds[0])
-            var[choice] = mutchoice
+        comblistmaster = []
+        for comb in product(aaspwrsub, repeat=len(mutinds)):
+            comblistmaster.append(''.join(comb))
+        random.shuffle(comblistmaster)
+        subject = list.copy(g1)
+        subject = subject[5:len(subject) - 24]
+        for k in range(0, len(comblistmaster)):
 
-        d['g{}p{}'.format(g, k)] = var
-        d['g{}p{}'.format(g, k)] = [item for sublist in d['g{}p{}'.format(g, k)] for item in sublist]
+            var = list.copy(subject)
+            currentcomb = comblistmaster[k]
+            for emeg in range(0, len(mutinds)):
+                choice = int(mutinds[emeg])
+                var[choice] = currentcomb[emeg]
 
-        del(var)
+            d['g{}p{}'.format(g, k)] = var
+            d['g{}p{}'.format(g, k)] = [item for sublist in d['g{}p{}'.format(g, k)] for item in sublist]
+            del (var)
 
 # VARIANT ASSESSMENT
 
     bestmutset = []
     kset = []
 
-    print('Gen {} assessment commenced'.format(g))
+    if asslib != "YES":
+        print('Gen {} assessment commenced'.format(g))
+    else:
+        print("Library Assessment Commenced")
+        wide = len(comblistmaster)
 
     for k in range(0, wide):
+        if asslib == "YES":
+            print("Now assessing variant {} of {}".format(k, wide))
         var = list(d['g{}p{}'.format(g, k)])
 
         for res in range(0, len(var)):
@@ -300,7 +341,7 @@ for g in range(2, generations+1):
 
                 for mbs in range(1, sites + 1):
 
-                    for y in range(1, 51): # For each cluster
+                    for y in range(0, 50): # For each cluster
                         set1 = [index for index, element in enumerate(d['b{}.bres{}.ind'.format(v, mbs)]) if element == y]
                         meanset1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                         slopeset1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -339,7 +380,7 @@ for g in range(2, generations+1):
                 summdif1 = [0, 0, 0, 0, 0]
                 ttl = []
                 for smbs in range(1, sites + 1):
-                    for clust in range(1, 51):
+                    for clust in range(0, 50):
 
                         summdif1[0] = sum(d4['p{}.means{}.c{}.pos{}'.format(k, smbs, clust, x)])
                         summdif1[1] = sum(d4['p{}.cslopes{}.c{}.pos{}'.format(k, smbs, clust, x)])
@@ -355,6 +396,109 @@ for g in range(2, generations+1):
 
         d['var{}.minscr'.format(k)] = min(vartot)
 
+        if asslib == "YES":
+            if k >= asslibthresh or k >= wide-1:
+                normtestset = []
+                for current in range(0, k):
+                    normtestset.append(d['var{}.minscr'.format(current)])
+                stat, p = shapiro(normtestset)
+                if p > 0.05:
+                    print("Normal distribution (p = {}) after {} variants being assessed using Shapiro-Wilks".format(p, k))
+                    klist1 = []
+                    klist2 = []
+                    klist3 = []
+                    for j in range(0, k):
+                        klist1.append(d['g{}p{}'.format(g, j)])
+                        klist2.append(d['var{}.minscr'.format(j)])
+                        klist3.append('>g{}p{} '.format(g, j))
+                    klist1, klist2, klist3 = zip(*sorted(zip(klist2, klist1, klist3)))
+                    with open(os.path.join(resdir, 'LIBRARYvariantscores.tsv'.format(g)), 'w', newline='') as f:
+                        writer = csv.writer(f, delimiter='\t')
+                        writer.writerows(zip(klist3, klist2, klist1))
+                    # Top 25%
+                    upper = math.ceil(len(klist1) * 0.25)
+                    trunclist = [0] * upper
+                    for uprcnt in range(0, upper):
+                        trunclist[uprcnt] = klist2[uprcnt]
+                    for u in range(0, len(mutinds)):
+                        position = mutinds[u]
+                        taas = []
+                        tcount = []
+                        for v in range(0, upper):
+                            subject = trunclist[v]
+                            isosub = subject[position]
+                            if isosub not in taas:
+                                taas.append(isosub)
+                                tcount.append(1)
+                            elif isosub in taas:
+                                isopos = taas.index(isosub)
+                                tcount[isopos] = tcount[isopos] + 1
+                        tperc = list.copy(tcount)
+                        for w in range(0, len(tcount)):
+                            tperc[w] = tcount[w]/sum(tcount)
+                        rows = zip(taas, tcount, tperc)
+                        with open(os.path.join(resdir, 'Position_{}_representation_UPPER.tsv'.format(u)), 'w', newline='') as f:
+                            writer = csv.writer(f, delimiter='\t')
+                            writer.writerows(rows)
+                    toptaas = list.copy(taas)
+                    toptcount = list.copy(tcount)
+                    toptperc = list.copy(tperc)
+
+                    # Bottom 25%
+                    klist2 = list(klist2)
+                    klist2.reverse()
+                    trunclist = [0] * upper
+                    for uprcnt in range(0, upper):
+                        trunclist[uprcnt] = klist2[uprcnt]
+                    for u in range(0, len(mutinds)):
+                        position = mutinds[u]
+                        taas = []
+                        tcount = []
+                        for v in range(0, upper):
+                            subject = trunclist[v]
+                            isosub = subject[position]
+                            if isosub not in taas:
+                                taas.append(isosub)
+                                tcount.append(1)
+                            elif isosub in taas:
+                                isopos = taas.index(isosub)
+                                tcount[isopos] = tcount[isopos] + 1
+                        tperc = list.copy(tcount)
+                        for w in range(0, len(tcount)):
+                            tperc[w] = tcount[w]/sum(tcount)
+
+                        rows = zip(taas, tcount, tperc)
+                        with open(os.path.join(resdir, 'Position_{}_representation_LOWER.tsv'.format(u)), 'w', newline='') as f:
+                            writer = csv.writer(f, delimiter='\t')
+                            writer.writerows(rows)
+
+                        #intersection
+
+                        finexcludes = []
+                        for ex in range(0, len(taas)):
+                            if taas[ex] in toptaas:
+                                ind = toptaas.index(taas[ex])
+                                mean = sum(toptcount)/len(toptcount)
+                                stddev = statistics.stdev(toptcount)
+                                if tcount[ex] >= toptcount[ind] and tcount[ex] >= (toptcount[ind] + stddev):
+                                    finexcludes.append("{} has {}% representation at position {} in the lowest 25% of scores and {}% in the highest 25% of scores and it should be excluded (based on sample size {} of a possible {} combinations).".format(
+                                        taas[ex], tperc[ex]*100, u, toptperc[ind]*100, u, k, len(comblistmaster)))
+                                elif tcount[ex] >= toptcount[ind] and tcount[ex] < (toptcount[ind] + stddev):
+                                    finexcludes.append("{} has {}% representation at position {} in the lowest 25% of scores and {}% in the highest 25% of scores and it could be excluded (based on sample size {} of a possible {} combinations).".format(
+                                            taas[ex], tperc[ex] * 100, u, toptperc[ind] * 100, u, k, len(comblistmaster)))
+                            elif taas[ex] not in toptaas:
+                                finexcludes.append(
+                                    "{} has {}% representation at position {} in the lowest 25% of scores and 0% in the highest 25% of scores and should be excluded (based on sample size {} of a possible {} combinations).".format(
+                                        taas[ex], tperc[ex]*100, u, k, len(comblistmaster)))
+                            toptcount = list.copy(tcount)
+                            toptperc = list.copy(tperc)
+
+                dumpfile = open(os.path.join(resdir, "exclusions.txt"), "w")
+                for element in finexcludes:
+                    dumpfile.write(element + "\n")
+                dumpfile.close
+                exit()
+
     klist1 = []
     klist2 = []
     klist3 = []
@@ -369,7 +513,7 @@ for g in range(2, generations+1):
     bestmutset = klist2
 
     if trunc > 0:
-        tpctfrc = int(round(wide/trunc))
+        tpctfrc = int(round(wide / trunc))
         klist1 = klist1[0:tpctfrc]
         klist2 = klist2[0:tpctfrc]
         klist2 = map(''.join, klist2)
