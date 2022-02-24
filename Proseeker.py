@@ -14,12 +14,11 @@ import random
 import warnings
 import csv
 import shutil
-from scipy.stats import shapiro
-from itertools import product
+
 import math
 import statistics
 
-required = {'numpy', 'pandas', 'sklearn'}
+required = {'numpy', 'pandas', 'sklearn', 'scipy', 'itertools'}
 installed = {pkg.key for pkg in pkg_resources.working_set}
 missing = required - installed
 
@@ -30,6 +29,8 @@ if missing:
 import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_squared_error
+from scipy.stats import shapiro
+from itertools import product
 
 warnings.filterwarnings("ignore")
 
@@ -401,7 +402,10 @@ for g in range(2, generations+1):
                 normtestset = []
                 for current in range(0, k):
                     normtestset.append(d['var{}.minscr'.format(current)])
-                stat, p = shapiro(normtestset)
+                if wide-1 >= asslibthresh:
+                    stat, p = shapiro(normtestset)
+                else:
+                    p = 1
                 if p > 0.05:
                     print("Normal distribution (p = {}) after {} variants being assessed using Shapiro-Wilks".format(p, k))
                     klist1 = []
