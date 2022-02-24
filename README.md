@@ -10,6 +10,8 @@ The generation will end when sufficient evidence of normality is observed (p > 0
 
 The output files from this mode will show the variants tested, representation of Amino Acids at mutable positions within the upper and lower quartiles and give a preliminary assessment on which residues are likely to have a negative effect when oberserved in a sequence at each mutable position.
 
+New library requirements: scipy and itertools
+
 ## UPDATE END
 
 Proseeker is supplied as a standalone Python script (Proseeker.py) for either interactive use or pipeline integration and was written in Python 3.9. 
