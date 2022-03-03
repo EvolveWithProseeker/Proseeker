@@ -4,7 +4,7 @@
 
 jobstart.csv is now copied into the results directory as used_jobstart.csv
 
-Focus mode is now added to allow targeted, selectable mutagenesis for assistance in making libraries. To activate this mode change the fmode option in jobstart.csv to YES. Once this is done Proseeker will run a single continuous generation with using the g1 protein sequence as a template. It will make every possible combination of amino acids of length n where n = the number of mutable residues in the sequence and only amino acids having non-zero probabilities of selection will be used. After which the standard assessment loop will assess each protein sequence against the library in random order.
+Focus mode is now added to allow targeted, selectable mutagenesis for assistance in making libraries. To activate this mode change the fmode option in jobstart.csv to YES. Once this is done Proseeker will run a single continuous generation with using the g1 protein sequence as a template. It will make every possible combination of amino acids of length n where n = the number of mutable residues in the sequence and only amino acids having non-zero probabilities of selection will be used after which the standard assessment loop will assess each protein sequence against the library in random order.
 
 The generation will end when sufficient evidence of normality is observed (p > 0.05 using a Shapiro-Wilks test) with assessment of normality starting once either fthresh variants have been tested or the complete pool of variants have been tested. In the case that the number of variants in the pool is lower than fthresh then no normality test will be conducted.
 
