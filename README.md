@@ -1,5 +1,21 @@
 # Proseeker: *In silico directed evolution*
 
+## UPDATE: 14/04/2022
+
+Minor feature update due to located memory bug when using long progenitor sequences in focussed mode.
+
+1: memorylimit added to jobstart.csv. 
+
+Setting this option to YES will cause Proseeker to use a smaller number of variants than all possible variants when creating a focussed combination set. Use this option when running in a desktop environment to avoid memory errors.
+
+2: memorythresh added to jobstart.csv. 
+
+The integer in this option specifies how many random variants Proseeker focussed mode is produced. This must be set to X>0 when memorylimit is set to YES.
+
+3: bresnum added to jobstart.csv. 
+
+Specifies the number of BRES files to be read in the library. This number is taken as sequential (i.e. setting it to 15 will result in bres 1-15 being read even if there are greater than 15 bres files in the directory.
+
 ## UPDATE: 24/02/2022
 
 jobstart.csv is now copied into the results directory as used_jobstart.csv
