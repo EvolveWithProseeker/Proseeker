@@ -34,6 +34,7 @@ from itertools import product
 
 warnings.filterwarnings("ignore")
 
+
 # DEFINITIONS
 
 def find(s, ch):
@@ -46,13 +47,15 @@ user_input = input("Enter the path to your Proseeker working directory (i.e C:\P
 # user_input = str(sys.argv[1])
 
 collist = ['g', 'k', 'MEG', 'block', 'g1', 'pchoice', 'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M',
-           'F', 'P', 'S', 'T', 'W', 'Y', 'V', 'truncres', 'cores', 'sites', 'bres', 'fmode', 'fthresh']
-
+           'F', 'P', 'S', 'T', 'W', 'Y', 'V', 'truncres', 'cores', 'sites', 'bres', 'fmode', 'fthresh', 'memorylimit',
+           'memorythresh','bresnum']
+pd.set_option("display.max_colwidth", 10000)
 jobstart = pd.read_csv(os.path.join(user_input, 'jobstart.csv'), usecols=collist)
 resdir = os.path.join(user_input, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 bresstr = str(jobstart['bres'])
-bresstr = bresstr[5:len(bresstr)-26]
+bresstr = bresstr[5:len(bresstr) - 26]
 bresdir = os.path.join(user_input, bresstr)
+bresnum = int(jobstart['bresnum'])
 generations = int(jobstart['g'])
 wide = int(jobstart['k'])
 MEG = int(jobstart['MEG'])
@@ -64,11 +67,13 @@ cores = int(jobstart['cores'])
 sites = int(jobstart['sites'])
 asslib = str(jobstart["fmode"])
 asslibthresh = int(jobstart['fthresh'])
-
+memlots = str(jobstart["memorylimit"])
+memthresh = int(jobstart['memorythresh'])
 d = {}
 
 if pchoice == 1:
-    aaprobset = jobstart[['A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V']]
+    aaprobset = jobstart[
+        ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']]
     d['aaprobset'] = aaprobset.values.tolist()
     d['aaprobset'] = [item for sublist in d['aaprobset'] for item in sublist]
 else:
@@ -85,16 +90,16 @@ shutil.copyfile(os.path.join(user_input, 'jobstart.csv'), os.path.join(resdir, '
 d1 = {}
 d2 = {}
 
-for bs in range(1, sites +1):
-    for x in range(1, 31):
+for bs in range(1, sites + 1):
+    for x in range(1, bresnum+1):
         bres = pd.read_csv(os.path.join(bresdir, 'p{}.bres{}.csv'.format(x, bs)), header=None, sep=',')
         d['b{}.bres{}.csv'.format(x, bs)] = bres
         d['b{}.bres{}.ind'.format(x, bs)] = list(bres.iloc[:, 13])
 
-        for v in range(0,13):
+        for v in range(0, 13):
             d1['col{}'.format(v)] = list(bres.iloc[:, v])
 
-        for y in range (0, 50):
+        for y in range(0, 50):
             set1 = [index for index, element in enumerate(d['b{}.bres{}.ind'.format(x, bs)]) if element == y]
             meanset1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             slopeset1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -105,25 +110,26 @@ for bs in range(1, sites +1):
                 meanset1[z] = sum(sub1) / len(sub1)
                 slopex1 = list.copy(sub1)
                 for q in range(1, len(slopex1) + 1):
-                    slopex1[q-1] = q
+                    slopex1[q - 1] = q
                 sub1.sort()
                 m, b = np.polyfit(slopex1, sub1, 1)
                 slopeset1[z] = m
             d['b{}.bres{}.c{}'.format(x, bs, y)] = meanset1
             d['b{}.cslopes{}.c{}'.format(x, bs, y)] = slopeset1
 
- #   AA values load and normalisation (if the data is pre-normalised it will be unchanged)
+#   AA values load and normalisation (if the data is pre-normalised it will be unchanged)
 
 aavals = pd.read_csv(os.path.join(user_input, 'ranking.csv'),
-                     usecols=['A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V'],
-                     sep =',')
+                     usecols=['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W',
+                              'Y', 'V'],
+                     sep=',')
 
-for i in range(0,544):
-    for j in range(0,20):
+for i in range(0, 544):
+    for j in range(0, 20):
         rowmin = min(aavals.iloc[i])
         rowmax = max(aavals.iloc[i])
         val = aavals.iloc[i, j]
-        aavals.replace([aavals.iloc[i, j]], (val - rowmin)/(rowmax - rowmin))
+        aavals.replace([aavals.iloc[i, j]], (val - rowmin) / (rowmax - rowmin))
 
 d['A'] = list(aavals['A'])
 d['R'] = list(aavals['R'])
@@ -155,8 +161,9 @@ readorder = list.copy(mutinds)
 g1 = list(g1)
 bestmutset = []
 asslib = str(asslib[5:8])
+memlots = str(memlots[5:8])
 
-for g in range(2, generations+1):
+for g in range(2, generations + 1):
     klstindx = 0
 
     if asslib != "YES":
@@ -173,7 +180,6 @@ for g in range(2, generations+1):
             var = list.copy(subject)
 
             for emeg in range(0, MEG):
-
                 random.shuffle(mutinds)
 
                 mutchoice = np.random.choice(['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P',
@@ -184,23 +190,31 @@ for g in range(2, generations+1):
 
             d['g{}p{}'.format(g, k)] = var
             d['g{}p{}'.format(g, k)] = [item for sublist in d['g{}p{}'.format(g, k)] for item in sublist]
-            del(var)
+            del (var)
 
     else:
 
         print('Library construction has commenced'.format(g))
         mutinds = sorted(mutinds)
         aaspwr = ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P',
-                     'S', 'T', 'W', 'Y', 'V']
+                  'S', 'T', 'W', 'Y', 'V']
         aaspwrprob = d['aaprobset']
         aaspwrsub = []
+
         for i in range(0, len(aaspwrprob)):
             if aaspwrprob[i] > 0:
                 aaspwrsub.append(aaspwr[i])
 
         comblistmaster = []
-        for comb in product(aaspwrsub, repeat=len(mutinds)):
-            comblistmaster.append(''.join(comb))
+        if memlots != "YES":
+            for comb in product(aaspwrsub, repeat=len(mutinds)):
+                comblistmaster.append(''.join(comb))
+        elif memlots == "YES":
+            for q in range(0, memthresh):
+                selelist = []
+                for r in range(0, len(mutinds)):
+                    selelist.append(random.choice(aaspwr))
+                comblistmaster.append(''.join(selelist))
         random.shuffle(comblistmaster)
         subject = list.copy(g1)
         subject = subject[5:len(subject) - 24]
@@ -214,9 +228,9 @@ for g in range(2, generations+1):
 
             d['g{}p{}'.format(g, k)] = var
             d['g{}p{}'.format(g, k)] = [item for sublist in d['g{}p{}'.format(g, k)] for item in sublist]
-            del (var)
+            del var
 
-# VARIANT ASSESSMENT
+    # VARIANT ASSESSMENT
 
     bestmutset = []
     kset = []
@@ -335,15 +349,18 @@ for g in range(2, generations+1):
         var.append(var5)
 
         for x in readorder:
-            window = [var[x-6], var[x-5], var[x-4], var[x-3], var[x-2], var[x-1], var[x], var[x+1], var[x+2], var[x+3],
-                      var[x+4], var[x+5], var[x+6]]
+            window = [var[x - 6], var[x - 5], var[x - 4], var[x - 3], var[x - 2], var[x - 1], var[x], var[x + 1],
+                      var[x + 2], var[x + 3],
+                      var[x + 4], var[x + 5], var[x + 6]]
 
-            for v in range(1, 31): # For each bres set
+            for v in range(1, bresnum+1):  # For each bres set
 
                 for mbs in range(1, sites + 1):
 
-                    for y in range(0, 50): # For each cluster
-                        set1 = [index for index, element in enumerate(d['b{}.bres{}.ind'.format(v, mbs)]) if element == y]
+                    for y in range(0, 50):  # For each cluster
+                        set1 = [index for index, element in enumerate(d['b{}.bres{}.ind'.format(v, mbs)]) if
+                                element == y]
+                        #print("{} where mbs={} and v={} and y={}".format(set1, mbs, v, y))
                         meanset1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                         slopeset1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -355,22 +372,26 @@ for g in range(2, generations+1):
                             meanset1[z] = sum(sub1) / len(sub1)
                             slopex1 = list.copy(sub1)
                             for q in range(1, len(slopex1) + 1):
-                                slopex1[q-1] = q
+                                slopex1[q - 1] = q
                             sub1.sort()
                             m, b = np.polyfit(slopex1, sub1, 1)
                             slopeset1[z] = m
 
-                        d4['p{}.means{}.c{}.pos{}'.format(k, mbs, y, x)] = [a - b for a, b in zip(d['b{}.bres{}.c{}'.format(v, mbs, y)], meanset1)]
-                        d4['p{}.cslopes{}.c{}.pos{}'.format(k, mbs, y, x)] = [a - b for a, b in zip(d['b{}.cslopes{}.c{}'.format(v, mbs, y)], slopeset1)]
+                        d4['p{}.means{}.c{}.pos{}'.format(k, mbs, y, x)] = [a - b for a, b in
+                                                                            zip(d['b{}.bres{}.c{}'.format(v, mbs, y)],
+                                                                                meanset1)]
+                        d4['p{}.cslopes{}.c{}.pos{}'.format(k, mbs, y, x)] = [a - b for a, b in zip(
+                            d['b{}.cslopes{}.c{}'.format(v, mbs, y)], slopeset1)]
                         corr_matrixa = np.corrcoef(d['b{}.bres{}.c{}'.format(v, mbs, y)], meanset1)
                         corra = corr_matrixa[0, 1]
-                        d4['p{}.rsq{}.c{}.pos{}'.format(k, mbs, y, x)] = 1- (corra ** 2)
-                        d4['p{}.rmse{}.c{}.pos{}'.format(k, mbs, y, x)] = mean_squared_error(d['b{}.bres{}.c{}'.format(v, mbs, y)], meanset1,
-                                                                                squared=False)
+                        d4['p{}.rsq{}.c{}.pos{}'.format(k, mbs, y, x)] = 1 - (corra ** 2)
+                        d4['p{}.rmse{}.c{}.pos{}'.format(k, mbs, y, x)] = mean_squared_error(
+                            d['b{}.bres{}.c{}'.format(v, mbs, y)], meanset1,
+                            squared=False)
                         compaset1 = d['b{}.bres{}.c{}'.format(v, mbs, y)]
                         tempcomp1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-                        for t in range(0,13):
+                        for t in range(0, 13):
                             tempcomp1[t] = (compaset1[t] - meanset1[t]) ** 2
 
                         d4['p{}.sse{}.c{}.pos{}'.format(k, mbs, y, x)] = sum(tempcomp1)
@@ -382,7 +403,6 @@ for g in range(2, generations+1):
                 ttl = []
                 for smbs in range(1, sites + 1):
                     for clust in range(0, 50):
-
                         summdif1[0] = sum(d4['p{}.means{}.c{}.pos{}'.format(k, smbs, clust, x)])
                         summdif1[1] = sum(d4['p{}.cslopes{}.c{}.pos{}'.format(k, smbs, clust, x)])
                         summdif1[2] = d4['p{}.rsq{}.c{}.pos{}'.format(k, smbs, clust, x)]
@@ -398,16 +418,17 @@ for g in range(2, generations+1):
         d['var{}.minscr'.format(k)] = min(vartot)
 
         if asslib == "YES":
-            if k >= asslibthresh or k >= wide-1:
+            if k >= asslibthresh or k >= wide - 1:
                 normtestset = []
                 for current in range(0, k):
                     normtestset.append(d['var{}.minscr'.format(current)])
-                if wide-1 >= asslibthresh:
+                if wide - 1 >= asslibthresh:
                     stat, p = shapiro(normtestset)
                 else:
                     p = 1
                 if p > 0.05:
-                    print("Normal distribution (p = {}) after {} variants being assessed using Shapiro-Wilks".format(p, k))
+                    print("Normal distribution (p = {}) after {} variants being assessed using Shapiro-Wilks".format(p,
+                                                                                                                     k))
                     klist1 = []
                     klist2 = []
                     klist3 = []
@@ -439,9 +460,10 @@ for g in range(2, generations+1):
                                 tcount[isopos] = tcount[isopos] + 1
                         tperc = list.copy(tcount)
                         for w in range(0, len(tcount)):
-                            tperc[w] = tcount[w]/sum(tcount)
+                            tperc[w] = tcount[w] / sum(tcount)
                         rows = zip(taas, tcount, tperc)
-                        with open(os.path.join(resdir, 'Position_{}_representation_UPPER.tsv'.format(u)), 'w', newline='') as f:
+                        with open(os.path.join(resdir, 'Position_{}_representation_UPPER.tsv'.format(u)), 'w',
+                                  newline='') as f:
                             writer = csv.writer(f, delimiter='\t')
                             writer.writerows(rows)
                     toptaas = list.copy(taas)
@@ -469,31 +491,39 @@ for g in range(2, generations+1):
                                 tcount[isopos] = tcount[isopos] + 1
                         tperc = list.copy(tcount)
                         for w in range(0, len(tcount)):
-                            tperc[w] = tcount[w]/sum(tcount)
+                            tperc[w] = tcount[w] / sum(tcount)
 
                         rows = zip(taas, tcount, tperc)
-                        with open(os.path.join(resdir, 'Position_{}_representation_LOWER.tsv'.format(u)), 'w', newline='') as f:
+                        with open(os.path.join(resdir, 'Position_{}_representation_LOWER.tsv'.format(u)), 'w',
+                                  newline='') as f:
                             writer = csv.writer(f, delimiter='\t')
                             writer.writerows(rows)
 
-                        #intersection
-
+                        # intersection
+                        print(taas)
                         finexcludes = []
                         for ex in range(0, len(taas)):
+                            print("ex={}".format(ex))
                             if taas[ex] in toptaas:
                                 ind = toptaas.index(taas[ex])
-                                mean = sum(toptcount)/len(toptcount)
+                                mean = sum(toptcount) / len(toptcount)
                                 stddev = statistics.stdev(toptcount)
+                                print("ind={}".format(ind))
+                                print("Crashinfo: tcount[ex] = {}, toptcount[ind] = {} , stddev = {}".format(tcount[ex], toptcount[ind], stddev))
                                 if tcount[ex] >= toptcount[ind] and tcount[ex] >= (toptcount[ind] + stddev):
-                                    finexcludes.append("{} has {}% representation at position {} in the lowest 25% of scores and {}% in the highest 25% of scores and it should be excluded (based on sample size {} of a possible {} combinations).".format(
-                                        taas[ex], tperc[ex]*100, u, toptperc[ind]*100, u, k, len(comblistmaster)))
+                                    finexcludes.append(
+                                        "{} has {}% representation at position {} in the lowest 25% of scores and {}% in the highest 25% of scores and it should be excluded (based on sample size {} of a possible {} combinations).".format(
+                                            taas[ex], tperc[ex] * 100, u, toptperc[ind] * 100, u, k,
+                                            len(comblistmaster)))
                                 elif tcount[ex] >= toptcount[ind] and tcount[ex] < (toptcount[ind] + stddev):
-                                    finexcludes.append("{} has {}% representation at position {} in the lowest 25% of scores and {}% in the highest 25% of scores and it could be excluded (based on sample size {} of a possible {} combinations).".format(
-                                            taas[ex], tperc[ex] * 100, u, toptperc[ind] * 100, u, k, len(comblistmaster)))
+                                    finexcludes.append(
+                                        "{} has {}% representation at position {} in the lowest 25% of scores and {}% in the highest 25% of scores and it could be excluded (based on sample size {} of a possible {} combinations).".format(
+                                            taas[ex], tperc[ex] * 100, u, toptperc[ind] * 100, u, k,
+                                            len(comblistmaster)))
                             elif taas[ex] not in toptaas:
                                 finexcludes.append(
                                     "{} has {}% representation at position {} in the lowest 25% of scores and 0% in the highest 25% of scores and should be excluded (based on sample size {} of a possible {} combinations).".format(
-                                        taas[ex], tperc[ex]*100, u, k, len(comblistmaster)))
+                                        taas[ex], tperc[ex] * 100, u, k, len(comblistmaster)))
                             toptcount = list.copy(tcount)
                             toptperc = list.copy(tperc)
 
