@@ -474,6 +474,7 @@ for g in range(2, generations + 1):
                     klist2 = list(klist2)
                     klist2.reverse()
                     trunclist = [0] * upper
+                    finexcludes = []
                     for uprcnt in range(0, upper):
                         trunclist[uprcnt] = klist2[uprcnt]
                     for u in range(0, len(mutinds)):
@@ -500,8 +501,6 @@ for g in range(2, generations + 1):
                             writer.writerows(rows)
 
                         # intersection
-                        print(taas)
-                        finexcludes = []
                         for ex in range(0, len(taas)):
                             print("ex={}".format(ex))
                             if taas[ex] in toptaas:
