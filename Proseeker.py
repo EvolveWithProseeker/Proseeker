@@ -426,7 +426,7 @@ for g in range(2, generations + 1):
                     p = 1
                 if p > 0.05:
                     print("Normal distribution (p = {}) after {} variants being assessed using Shapiro-Wilks".format(p,
-                                                                                                                     k))
+                                                                                                                     k + 1))
                     print("Finalising run")
                     keepvar = k + 1
                     klist1 = []
