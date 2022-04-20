@@ -1,6 +1,6 @@
 # Proseeker
 
-# Version:           1.0
+# Version:           1.5
 # Python Version:    3.9
 
 # IMPORTS
@@ -33,7 +33,6 @@ from scipy.stats import shapiro
 from itertools import product
 
 warnings.filterwarnings("ignore")
-
 
 # DEFINITIONS
 
@@ -243,7 +242,7 @@ for g in range(2, generations + 1):
 
     for k in range(0, wide):
         if asslib == "YES":
-            print("Now assessing variant {} of {}".format(k, wide))
+            print("Now assessing variant {} of {}".format(k + 1, wide))
         var = list(d['g{}p{}'.format(g, k)])
 
         for res in range(0, len(var)):
@@ -360,7 +359,6 @@ for g in range(2, generations + 1):
                     for y in range(0, 50):  # For each cluster
                         set1 = [index for index, element in enumerate(d['b{}.bres{}.ind'.format(v, mbs)]) if
                                 element == y]
-                        #print("{} where mbs={} and v={} and y={}".format(set1, mbs, v, y))
                         meanset1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                         slopeset1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -418,7 +416,7 @@ for g in range(2, generations + 1):
         d['var{}.minscr'.format(k)] = min(vartot)
 
         if asslib == "YES":
-            if k >= asslibthresh or k >= wide - 1:
+            if k >= asslibthresh - 1 or k >= wide - 1:
                 normtestset = []
                 for current in range(0, k):
                     normtestset.append(d['var{}.minscr'.format(current)])
@@ -429,6 +427,8 @@ for g in range(2, generations + 1):
                 if p > 0.05:
                     print("Normal distribution (p = {}) after {} variants being assessed using Shapiro-Wilks".format(p,
                                                                                                                      k))
+                    print("Finalising run")
+                    keepvar = k + 1
                     klist1 = []
                     klist2 = []
                     klist3 = []
@@ -466,6 +466,7 @@ for g in range(2, generations + 1):
                                   newline='') as f:
                             writer = csv.writer(f, delimiter='\t')
                             writer.writerows(rows)
+
                     toptaas = list.copy(taas)
                     toptcount = list.copy(tcount)
                     toptperc = list.copy(tperc)
@@ -500,37 +501,55 @@ for g in range(2, generations + 1):
                             writer = csv.writer(f, delimiter='\t')
                             writer.writerows(rows)
 
-                        # intersection
+                        # Intersection - This section has been rewritten as it did not produce the correct output.
+                        subject1 = pd.read_csv(os.path.join(resdir, 'Position_{}_representation_UPPER.tsv'.format(u)),
+                                               delimiter='\t', header=None)
+                        subject2 = pd.read_csv(os.path.join(resdir, 'Position_{}_representation_LOWER.tsv'.format(u)), delimiter='\t', header=None)
+
+                        del taas
+                        del tcount
+                        del tperc
+                        del toptaas
+                        del toptcount
+                        del toptperc
+
+                        taas = list(subject2[0])
+                        tcount = list(subject2[1])
+                        tperc = list(subject2[2])
+                        toptaas = list(subject1[0])
+                        toptcount = list(subject1[1])
+                        toptperc = list(subject1[2])
+
                         for ex in range(0, len(taas)):
-                            print("ex={}".format(ex))
                             if taas[ex] in toptaas:
                                 ind = toptaas.index(taas[ex])
-                                mean = sum(toptcount) / len(toptcount)
                                 stddev = statistics.stdev(toptcount)
-                                print("ind={}".format(ind))
-                                print("Crashinfo: tcount[ex] = {}, toptcount[ind] = {} , stddev = {}".format(tcount[ex], toptcount[ind], stddev))
                                 if tcount[ex] >= toptcount[ind] and tcount[ex] >= (toptcount[ind] + stddev):
                                     finexcludes.append(
-                                        "{} has {}% representation at position {} in the lowest 25% of scores and {}% in the highest 25% of scores and it should be excluded (based on sample size {} of a possible {} combinations).".format(
-                                            taas[ex], tperc[ex] * 100, u, toptperc[ind] * 100, u, k,
+                                        "{} has {}% representation at position {} in the lowest 25% of scores and {}% in "
+                                        "the highest 25% of scores and it should be excluded (based on sample size {} of "
+                                        "a possible {} combinations).".format(
+                                            taas[ex], tperc[ex] * 100, u, toptperc[ind] * 100, keepvar,
                                             len(comblistmaster)))
                                 elif tcount[ex] >= toptcount[ind] and tcount[ex] < (toptcount[ind] + stddev):
                                     finexcludes.append(
-                                        "{} has {}% representation at position {} in the lowest 25% of scores and {}% in the highest 25% of scores and it could be excluded (based on sample size {} of a possible {} combinations).".format(
-                                            taas[ex], tperc[ex] * 100, u, toptperc[ind] * 100, u, k,
+                                        "{} has {}% representation at position {} in the lowest 25% of scores and {}% in "
+                                        "the highest 25% of scores and it could be excluded (based on sample size {} of "
+                                        "a possible {} combinations).".format(
+                                            taas[ex], tperc[ex] * 100, u, toptperc[ind] * 100, keepvar,
                                             len(comblistmaster)))
                             elif taas[ex] not in toptaas:
                                 finexcludes.append(
-                                    "{} has {}% representation at position {} in the lowest 25% of scores and 0% in the highest 25% of scores and should be excluded (based on sample size {} of a possible {} combinations).".format(
-                                        taas[ex], tperc[ex] * 100, u, k, len(comblistmaster)))
-                            toptcount = list.copy(tcount)
-                            toptperc = list.copy(tperc)
+                                    "{} has {}% representation at position {} in the lowest 25% of scores and 0% in the "
+                                    "highest 25% of scores and should be excluded (based on sample size {} of a possible "
+                                    "{} combinations).".format(
+                                        taas[ex], tperc[ex] * 100, u, keepvar, len(comblistmaster)))
 
-                dumpfile = open(os.path.join(resdir, "exclusions.txt"), "w")
-                for element in finexcludes:
-                    dumpfile.write(element + "\n")
-                dumpfile.close
-                exit()
+                    dumpfile = open(os.path.join(resdir, "exclusions.txt"), "w")
+                    for element in finexcludes:
+                        dumpfile.write(element + "\n")
+                    dumpfile.close
+                    exit()
 
     klist1 = []
     klist2 = []
@@ -555,3 +574,4 @@ for g in range(2, generations + 1):
     with open(os.path.join(resdir, 'g{}variantscores.tsv'.format(g)), 'w', newline='') as f:
         writer = csv.writer(f, delimiter='\t')
         writer.writerows(zip(klist3, klist2, klist1))
+
