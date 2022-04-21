@@ -417,6 +417,7 @@ for g in range(2, generations + 1):
 
         if asslib == "YES":
             if k >= asslibthresh - 1 or k >= wide - 1:
+                print("testing: {}".format(k))
                 normtestset = []
                 for current in range(0, k):
                     normtestset.append(d['var{}.minscr'.format(current)])
