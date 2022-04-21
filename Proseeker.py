@@ -66,6 +66,8 @@ cores = int(jobstart['cores'])
 sites = int(jobstart['sites'])
 asslib = str(jobstart["fmode"])
 asslibthresh = int(jobstart['fthresh'])
+if str(asslib[5:8]) == "YES":
+    wide = asslibthresh
 memlots = str(jobstart["memorylimit"])
 memthresh = int(jobstart['memorythresh'])
 d = {}
