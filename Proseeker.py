@@ -424,7 +424,12 @@ for g in range(2, generations + 1):
                 for current in range(0, k):
                     normtestset.append(d['var{}.minscr'.format(current)])
                 if wide - 1 >= asslibthresh:
-                    stat, p = shapiro(normtestset)
+                    if k <=49:
+                        print("Shapiro. k={}".format(k))
+                        stat, p = shapiro(normtestset)
+                    else:
+                        stat, p = kstest(normtestset,'norm')
+                        print("ks. k={}".format(k))
                 else:
                     p = 1
                 if p > 0.05:
