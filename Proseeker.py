@@ -14,12 +14,8 @@ import random
 import warnings
 import csv
 import shutil
-
-
 import math
 import statistics
-
-
 import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_squared_error
@@ -30,7 +26,6 @@ import logomaker as lm
 import matplotlib.pyplot as plt
 
 warnings.filterwarnings("ignore")
-
 
 # DEFINITIONS
 
@@ -439,7 +434,7 @@ for g in range(2, generations + 1):
 
                 if p > 0.05:
                     if p == 1.1:
-                        print("Uniform distributionafter {} variants being assessed".format(k + 1))
+                        print("Uniform distribution after {} variants being assessed".format(k + 1))
                     elif p == 1:
                         print("run finalised after {} variants being assessed".format(k + 1))
                     else:
@@ -458,6 +453,7 @@ for g in range(2, generations + 1):
                     with open(os.path.join(resdir, 'LIBRARYvariantscores.tsv'.format(g)), 'w', newline='') as f:
                         writer = csv.writer(f, delimiter='\t')
                         writer.writerows(zip(klist3, klist2, klist1))
+                        
                     # Top 25%
                     upper = math.ceil(len(klist1) * 0.25)
                     trunclist = [0] * upper
@@ -520,7 +516,8 @@ for g in range(2, generations + 1):
                             writer = csv.writer(f, delimiter='\t')
                             writer.writerows(rows)
 
-                        # Intersection - This section has been rewritten as it did not produce the correct output.
+                        # Intersection
+                        
                         subject1 = pd.read_csv(os.path.join(resdir, 'Position_{}_representation_UPPER.tsv'.format(u)),
                                                delimiter='\t', header=None)
                         subject2 = pd.read_csv(os.path.join(resdir, 'Position_{}_representation_LOWER.tsv'.format(u)), delimiter='\t', header=None)
