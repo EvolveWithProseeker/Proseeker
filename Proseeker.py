@@ -1,6 +1,6 @@
 # Proseeker
 
-# Version:           1.5
+# Version:           1.6_LOGOS
 # Python Version:    3.9
 
 # IMPORTS
@@ -15,24 +15,22 @@ import warnings
 import csv
 import shutil
 
+
 import math
 import statistics
 
-required = {'numpy', 'pandas', 'sklearn', 'scipy', 'itertools'}
-installed = {pkg.key for pkg in pkg_resources.working_set}
-missing = required - installed
-
-if missing:
-    python = sys.executable
-    subprocess.check_call([python, '-m', 'pip', 'install', *missing], stdout=subprocess.DEVNULL)
 
 import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_squared_error
 from scipy.stats import shapiro
 from itertools import product
+from scipy.stats import kstest
+import logomaker as lm
+import matplotlib.pyplot as plt
 
 warnings.filterwarnings("ignore")
+
 
 # DEFINITIONS
 
@@ -419,22 +417,34 @@ for g in range(2, generations + 1):
 
         if asslib == "YES":
             if k >= asslibthresh - 1 or k >= wide - 1:
-                print("testing: {}".format(k))
                 normtestset = []
                 for current in range(0, k):
                     normtestset.append(d['var{}.minscr'.format(current)])
                 if wide - 1 >= asslibthresh:
                     if k <=49:
-                        print("Shapiro. k={}".format(k))
                         stat, p = shapiro(normtestset)
                     else:
                         stat, p = kstest(normtestset,'norm')
-                        print("ks. k={}".format(k))
+                        print('ks stat={} p = {}'.format(stat, p))
+
+                    ## UNIFORM CHECK
+                    
+                    testmean = statistics.mean(normtestset)
+                    testsd = statistics.stdev(normtestset)
+                    difmid = min(normtestset) + ((max(normtestset) - min(normtestset))/2)
+                    if (difmid - testsd) <= testmean <= (difmid + testsd):
+                        p = 1.1
                 else:
                     p = 1
+
                 if p > 0.05:
-                    print("Normal distribution (p = {}) after {} variants being assessed using Shapiro-Wilks".format(p,
-                                                                                                                     k + 1))
+                    if p == 1.1:
+                        print("Uniform distributionafter {} variants being assessed".format(k + 1))
+                    elif p == 1:
+                        print("run finalised after {} variants being assessed".format(k + 1))
+                    else:
+                        print("Normal distribution (p = {}) after {} variants being assessed".format(p, k + 1))
+                    
                     print("Finalising run")
                     keepvar = k + 1
                     klist1 = []
@@ -484,6 +494,7 @@ for g in range(2, generations + 1):
                     klist2.reverse()
                     trunclist = [0] * upper
                     finexcludes = []
+
                     for uprcnt in range(0, upper):
                         trunclist[uprcnt] = klist2[uprcnt]
                     for u in range(0, len(mutinds)):
@@ -528,6 +539,8 @@ for g in range(2, generations + 1):
                         toptcount = list(subject1[1])
                         toptperc = list(subject1[2])
 
+                        # At this point lists are loaded correctly.
+
                         for ex in range(0, len(taas)):
                             if taas[ex] in toptaas:
                                 ind = toptaas.index(taas[ex])
@@ -557,7 +570,241 @@ for g in range(2, generations + 1):
                     for element in finexcludes:
                         dumpfile.write(element + "\n")
                     dumpfile.close
-                    exit()
+
+                    # LOGO SECTION
+                    color_scheme = {
+                        'A': '#2f4f4f',
+                        'R': '#2e8b57',
+                        'N': '#800000',
+                        'D': '#191970',
+                        'C': '#808000',
+                        'Q': '#ff0000',
+                        'E': '#ff8c00',
+                        'G': '#ffd700',
+                        'H': '#0000cd',
+                        'I': '#ba55d3',
+                        'L': '#00ff7f',
+                        'K': '#adff2f',
+                        'F': '#ffdead',
+                        'M': '#ff00ff',
+                        'P': '#1e90ff',
+                        'S': '#fa8072',
+                        'T': '#dda0dd',
+                        'W': '#add8e6',
+                        'Y': '#ff1493',
+                        'V': '#7fffd4'
+                    }
+
+                    aalogolis = ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']
+
+                    for ds in range(0, 3):
+                        aaalist = [0] * len(mutinds)
+                        aarlist = [0] * len(mutinds)
+                        aanlist = [0] * len(mutinds)
+                        aadlist = [0] * len(mutinds)
+                        aaclist = [0] * len(mutinds)
+                        aaqlist = [0] * len(mutinds)
+                        aaelist = [0] * len(mutinds)
+                        aaglist = [0] * len(mutinds)
+                        aahlist = [0] * len(mutinds)
+                        aailist = [0] * len(mutinds)
+                        aallist = [0] * len(mutinds)
+                        aaklist = [0] * len(mutinds)
+                        aamlist = [0] * len(mutinds)
+                        aaflist = [0] * len(mutinds)
+                        aaplist = [0] * len(mutinds)
+                        aaslist = [0] * len(mutinds)
+                        aatlist = [0] * len(mutinds)
+                        aawlist = [0] * len(mutinds)
+                        aaylist = [0] * len(mutinds)
+                        aavlist = [0] * len(mutinds)
+
+                        aaauprlist = [0] * len(mutinds)
+                        aaruprlist = [0] * len(mutinds)
+                        aanuprlist = [0] * len(mutinds)
+                        aaduprlist = [0] * len(mutinds)
+                        aacuprlist = [0] * len(mutinds)
+                        aaquprlist = [0] * len(mutinds)
+                        aaeuprlist = [0] * len(mutinds)
+                        aaguprlist = [0] * len(mutinds)
+                        aahuprlist = [0] * len(mutinds)
+                        aaiuprlist = [0] * len(mutinds)
+                        aaluprlist = [0] * len(mutinds)
+                        aakuprlist = [0] * len(mutinds)
+                        aamuprlist = [0] * len(mutinds)
+                        aafuprlist = [0] * len(mutinds)
+                        aapuprlist = [0] * len(mutinds)
+                        aasuprlist = [0] * len(mutinds)
+                        aatuprlist = [0] * len(mutinds)
+                        aawuprlist = [0] * len(mutinds)
+                        aayuprlist = [0] * len(mutinds)
+                        aavuprlist = [0] * len(mutinds)
+
+                        aaalwrlist = [0] * len(mutinds)
+                        aarlwrlist = [0] * len(mutinds)
+                        aanlwrlist = [0] * len(mutinds)
+                        aadlwrlist = [0] * len(mutinds)
+                        aaclwrlist = [0] * len(mutinds)
+                        aaqlwrlist = [0] * len(mutinds)
+                        aaelwrlist = [0] * len(mutinds)
+                        aaglwrlist = [0] * len(mutinds)
+                        aahlwrlist = [0] * len(mutinds)
+                        aailwrlist = [0] * len(mutinds)
+                        aallwrlist = [0] * len(mutinds)
+                        aaklwrlist = [0] * len(mutinds)
+                        aamlwrlist = [0] * len(mutinds)
+                        aaflwrlist = [0] * len(mutinds)
+                        aaplwrlist = [0] * len(mutinds)
+                        aaslwrlist = [0] * len(mutinds)
+                        aatlwrlist = [0] * len(mutinds)
+                        aawlwrlist = [0] * len(mutinds)
+                        aaylwrlist = [0] * len(mutinds)
+                        aavlwrlist = [0] * len(mutinds)
+
+                        for u in range(0, len(mutinds)):
+                            subject1 = pd.read_csv(os.path.join(resdir, 'Position_{}_representation_UPPER.tsv'.format(u)),
+                                                   delimiter='\t', header=None)
+                            subject2 = pd.read_csv(os.path.join(resdir, 'Position_{}_representation_LOWER.tsv'.format(u)), delimiter='\t', header=None)
+
+                            l1 = [0] * len(aalogolis)
+                            l2 = [0] * len(aalogolis)
+                            l3 = [0] * len(aalogolis)
+
+                            for t in range(0,2):
+                                if t == 0:
+                                    c1 = list(subject1[0])
+                                    c2 = list(subject1[2])
+                                elif t == 1:
+                                    c1 = list(subject2[0])
+                                    c2 = list(subject2[2])
+
+                                for v in range(0, len(aalogolis)):
+                                    if aalogolis[v] in c1:
+                                        lind = c1.index(aalogolis[v])
+                                        if t == 0:
+                                            l1[v] = c2[lind]
+                                        elif t == 1:
+                                            l2[v] = c2[lind]
+                            for t in range(0, len(l1)):
+                                l3[t] = float(l1[t]) - float(l2[t])
+
+                            aaalist[u] = l3[aalogolis.index('A')]
+                            aarlist[u] = l3[aalogolis.index('R')]
+                            aanlist[u] = l3[aalogolis.index('N')]
+                            aadlist[u] = l3[aalogolis.index('D')]
+                            aaclist[u] = l3[aalogolis.index('C')]
+                            aaqlist[u] = l3[aalogolis.index('Q')]
+                            aaelist[u] = l3[aalogolis.index('E')]
+                            aaglist[u] = l3[aalogolis.index('G')]
+                            aahlist[u] = l3[aalogolis.index('H')]
+                            aailist[u] = l3[aalogolis.index('I')]
+                            aallist[u] = l3[aalogolis.index('L')]
+                            aaklist[u] = l3[aalogolis.index('K')]
+                            aamlist[u] = l3[aalogolis.index('M')]
+                            aaflist[u] = l3[aalogolis.index('F')]
+                            aaplist[u] = l3[aalogolis.index('P')]
+                            aaslist[u] = l3[aalogolis.index('S')]
+                            aatlist[u] = l3[aalogolis.index('T')]
+                            aawlist[u] = l3[aalogolis.index('W')]
+                            aaylist[u] = l3[aalogolis.index('Y')]
+                            aavlist[u] = l3[aalogolis.index('V')]
+
+                            aaauprlist[u] = l1[aalogolis.index('A')]
+                            aaruprlist[u] = l1[aalogolis.index('R')]
+                            aanuprlist[u] = l1[aalogolis.index('N')]
+                            aaduprlist[u] = l1[aalogolis.index('D')]
+                            aacuprlist[u] = l1[aalogolis.index('C')]
+                            aaquprlist[u] = l1[aalogolis.index('Q')]
+                            aaeuprlist[u] = l1[aalogolis.index('E')]
+                            aaguprlist[u] = l1[aalogolis.index('G')]
+                            aahuprlist[u] = l1[aalogolis.index('H')]
+                            aaiuprlist[u] = l1[aalogolis.index('I')]
+                            aaluprlist[u] = l1[aalogolis.index('L')]
+                            aakuprlist[u] = l1[aalogolis.index('K')]
+                            aamuprlist[u] = l1[aalogolis.index('M')]
+                            aafuprlist[u] = l1[aalogolis.index('F')]
+                            aapuprlist[u] = l1[aalogolis.index('P')]
+                            aasuprlist[u] = l1[aalogolis.index('S')]
+                            aatuprlist[u] = l1[aalogolis.index('T')]
+                            aawuprlist[u] = l1[aalogolis.index('W')]
+                            aayuprlist[u] = l1[aalogolis.index('Y')]
+                            aavuprlist[u] = l1[aalogolis.index('V')]
+
+                            aaalwrlist[u] = l2[aalogolis.index('A')]
+                            aarlwrlist[u] = l2[aalogolis.index('R')]
+                            aanlwrlist[u] = l2[aalogolis.index('N')]
+                            aadlwrlist[u] = l2[aalogolis.index('D')]
+                            aaclwrlist[u] = l2[aalogolis.index('C')]
+                            aaqlwrlist[u] = l2[aalogolis.index('Q')]
+                            aaelwrlist[u] = l2[aalogolis.index('E')]
+                            aaglwrlist[u] = l2[aalogolis.index('G')]
+                            aahlwrlist[u] = l2[aalogolis.index('H')]
+                            aailwrlist[u] = l2[aalogolis.index('I')]
+                            aallwrlist[u] = l2[aalogolis.index('L')]
+                            aaklwrlist[u] = l2[aalogolis.index('K')]
+                            aamlwrlist[u] = l2[aalogolis.index('M')]
+                            aaflwrlist[u] = l2[aalogolis.index('F')]
+                            aaplwrlist[u] = l2[aalogolis.index('P')]
+                            aaslwrlist[u] = l2[aalogolis.index('S')]
+                            aatlwrlist[u] = l2[aalogolis.index('T')]
+                            aawlwrlist[u] = l2[aalogolis.index('W')]
+                            aaylwrlist[u] = l2[aalogolis.index('Y')]
+                            aavlwrlist[u] = l2[aalogolis.index('V')]
+
+                        df = pd.DataFrame(list(zip(aaalist, aarlist, aanlist, aadlist, aaclist, aaqlist, aaelist, aaglist, aahlist, aailist, aallist, aaklist, aamlist, aaflist, aaplist, aaslist, aatlist, aawlist, aaylist, aavlist)),
+                                          columns=['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V'])
+                        plt.ion()
+                        logo = lm.Logo(df,
+                                           shade_below=.5,
+                                           fade_below=.5,
+                                           font_name='Courier New',
+                                       color_scheme=color_scheme,)
+
+                        logo.style_spines(visible=False)
+                        logo.style_spines(spines=['left', 'bottom'], visible=True)
+                        logo.style_xticks(rotation=90, fmt='%d', anchor=0)
+                        logo.ax.set_ylabel("Difference (Q1-Q4)", labelpad=-1)
+                        plt.savefig(os.path.join(resdir, "DifferenceLogo.svg"))
+                        plt.close()
+
+                        df = pd.DataFrame(list(
+                            zip(aaauprlist, aaruprlist, aanuprlist, aaduprlist, aacuprlist, aaquprlist, aaeuprlist, aaguprlist, aahuprlist,
+                                aaiuprlist, aaluprlist, aakuprlist, aamuprlist, aafuprlist, aapuprlist, aasuprlist, aatuprlist, aawuprlist,
+                                aayuprlist, aavuprlist)),
+                                          columns=['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F',
+                                                   'P', 'S', 'T', 'W', 'Y', 'V'])
+                        plt.ion()
+                        logo = lm.Logo(df,
+                                       shade_below=.5,
+                                       fade_below=.5,
+                                       font_name='Courier New',
+                                       color_scheme=color_scheme)
+
+                        logo.style_spines(visible=False)
+                        logo.style_spines(spines=['left', 'bottom'], visible=True)
+                        logo.style_xticks(rotation=90, fmt='%d', anchor=0)
+                        logo.ax.set_ylabel("Q1 Rep", labelpad=-1)
+                        plt.savefig(os.path.join(resdir, "Q1Logo.svg"))
+                        plt.close()
+
+                        df = pd.DataFrame(list(zip(aaalwrlist, aarlwrlist, aanlwrlist, aadlwrlist, aaclwrlist, aaqlwrlist, aaelwrlist,
+                                                   aaglwrlist, aahlwrlist, aailwrlist, aallwrlist, aaklwrlist, aamlwrlist, aaflwrlist,
+                                                   aaplwrlist, aaslwrlist, aatlwrlist, aawlwrlist, aaylwrlist, aavlwrlist)),
+                                          columns=['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V'])
+                        plt.ion()
+                        logo = lm.Logo(df,
+                                           shade_below=.5,
+                                           fade_below=.5,
+                                           font_name='Courier New',
+                                       color_scheme=color_scheme,)
+
+                        logo.style_spines(visible=False)
+                        logo.style_spines(spines=['left', 'bottom'], visible=True)
+                        logo.style_xticks(rotation=90, fmt='%d', anchor=0)
+                        logo.ax.set_ylabel("Q4 Rep", labelpad=-1)
+                        plt.savefig(os.path.join(resdir, "Q4Logo.svg"))
+                        plt.close()
+                        exit()
 
     klist1 = []
     klist2 = []
@@ -582,4 +829,3 @@ for g in range(2, generations + 1):
     with open(os.path.join(resdir, 'g{}variantscores.tsv'.format(g)), 'w', newline='') as f:
         writer = csv.writer(f, delimiter='\t')
         writer.writerows(zip(klist3, klist2, klist1))
-
